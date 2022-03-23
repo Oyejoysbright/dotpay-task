@@ -39,6 +39,8 @@ public class Transaction {
     private CurrencyEnum currency = CurrencyEnum.NGN;
     private String senderAccountNumber;
     private String beneficiaryAccountNumber;
+    private boolean commissionWorthy = false;
+    private double commission;
     @Column(nullable = false)
     private TransferType transferType;
     

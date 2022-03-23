@@ -29,7 +29,7 @@ public class TransactionService {
     private static DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
     static double getTransactionFee(double amount) {
-        String fee = String.valueOf(((0.5 * 100) *amount));
+        String fee = String.valueOf(((0.5 / 100) * amount));
         // Format the decimal result
         fee = decimalFormat.format(fee);
         return Double.parseDouble(fee);
