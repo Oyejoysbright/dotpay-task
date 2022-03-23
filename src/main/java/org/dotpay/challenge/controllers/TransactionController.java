@@ -4,6 +4,7 @@ import org.dotpay.challenge.dtos.TransactionRequest;
 import org.dotpay.challenge.enums.TransactionStatus;
 import org.dotpay.challenge.enums.TransferType;
 import org.dotpay.challenge.services.TransactionService;
+import org.dotpay.challenge.services.TransactionSummaryService;
 import org.dotpay.challenge.utils.ServerResponse.ResponseMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TransactionController {
     private final TransactionService service;
+    private final TransactionSummaryService summaryService;
 
     @PostMapping("/request")
     public ResponseEntity<ResponseMessage<Object>> requestTransfer(@RequestBody TransactionRequest payload) {
@@ -35,5 +37,10 @@ public class TransactionController {
         @RequestParam(required = false, defaultValue = "") String endDate,
         @RequestParam(required = false, defaultValue = "") TransferType type) {
         return service.getTransactionHistory(status, senderAccountNumber, receiverAccountNumber, startDate, endDate, type);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<ResponseMessage<Object>> getTransactionSummary(String date) {
+        return summaryService.getTransactionSummary(date);
     }
 }

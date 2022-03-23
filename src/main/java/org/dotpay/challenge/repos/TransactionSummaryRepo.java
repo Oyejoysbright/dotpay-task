@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TransactionSummaryRepo extends JpaRepository<TransactionSummary, String> {
+
+    TransactionSummary findByCreatedAt(String date);
     
 }
