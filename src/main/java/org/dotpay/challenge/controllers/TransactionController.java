@@ -29,14 +29,15 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseMessage<Object>> getTransactions (
-        @RequestParam(required = false, defaultValue = "") TransactionStatus status,
-        @RequestParam(required = false, defaultValue = "") String senderAccountNumber,
-        @RequestParam(required = false, defaultValue = "") String receiverAccountNumber,
-        @RequestParam(required = false, defaultValue = "") String startDate,
-        @RequestParam(required = false, defaultValue = "") String endDate,
-        @RequestParam(required = false, defaultValue = "") TransferType type) {
-        return service.getTransactionHistory(status, senderAccountNumber, receiverAccountNumber, startDate, endDate, type);
+    public ResponseEntity<ResponseMessage<Object>> getTransactions(
+            @RequestParam(required = false, defaultValue = "") TransactionStatus status,
+            @RequestParam(required = false, defaultValue = "") String senderAccountNumber,
+            @RequestParam(required = false, defaultValue = "") String receiverAccountNumber,
+            @RequestParam(required = false, defaultValue = "") String startDate,
+            @RequestParam(required = false, defaultValue = "") String endDate,
+            @RequestParam(required = false, defaultValue = "") TransferType type) {
+        return service.getTransactionHistory(status, senderAccountNumber, receiverAccountNumber, startDate, endDate,
+                type);
     }
 
     @GetMapping("/summary")

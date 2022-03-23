@@ -51,7 +51,7 @@ public class TransactionService {
         customerRepo.save(customer);
     }
 
-    public ResponseEntity<ResponseMessage<Object>> performTransfer (TransactionRequest payload) {
+    public ResponseEntity<ResponseMessage<Object>> performTransfer(TransactionRequest payload) {
         try {
             Transaction transaction = new Transaction();
             BeanUtils.copyProperties(payload, transaction);
@@ -59,10 +59,11 @@ public class TransactionService {
 
             try {
                 Customer senderAccount = customerRepo.findByAccountNumber(transaction.getSenderAccountNumber());
-                Customer beneficiaryAccount = customerRepo.findByAccountNumber(transaction.getBeneficiaryAccountNumber());
+                Customer beneficiaryAccount = customerRepo
+                        .findByAccountNumber(transaction.getBeneficiaryAccountNumber());
                 moveFundToReserve(senderAccount, transaction.getAmount());
                 moveFundToReserve(beneficiaryAccount, transaction.getAmount());
-                if(senderAccount.getBankCode().equalsIgnoreCase(beneficiaryAccount.getBankCode())) {
+                if (senderAccount.getBankCode().equalsIgnoreCase(beneficiaryAccount.getBankCode())) {
                     transaction.setTransferType(TransferType.INTRA);
                 } else {
                     transaction.setTransferType(TransferType.INTER);
@@ -79,23 +80,23 @@ public class TransactionService {
             } finally {
                 transactionRepo.save(transaction);
             }
-            
+
             return ServerResponse.successfulResponse("Transaction successful", transaction.getTransactionRef());
         } catch (Exception e) {
             return ServerResponse.failedResponse(e);
         }
     }
 
-    public ResponseEntity<ResponseMessage<Object>> getTransactionHistory (
-        TransactionStatus status, String senderAccountNumber, String receiverAccountNumber, String startDate, String endDate, TransferType type) {
-            try {
-                List<Transaction> transactions = 
-                    transactionRepo.findByStatusAndSenderAccountNumberAndReceiverAccountNumberAndTransferTypeAndCreatedAtBetween(
-                        status, senderAccountNumber, receiverAccountNumber, type, startDate, endDate
-                    );
-                return ServerResponse.successfulResponse("Transactions fetched", transactions);
-            } catch (Exception e) {
-                return ServerResponse.failedResponse(e);
-            }
+    public ResponseEntity<ResponseMessage<Object>> getTransactionHistory(
+            TransactionStatus status, String senderAccountNumber, String receiverAccountNumber, String startDate,
+            String endDate, TransferType type) {
+        try {
+            List<Transaction> transactions = transactionRepo
+                    .findByStatusAndSenderAccountNumberAndReceiverAccountNumberAndTransferTypeAndCreatedAtBetween(
+                            status, senderAccountNumber, receiverAccountNumber, type, startDate, endDate);
+            return ServerResponse.successfulResponse("Transactions fetched", transactions);
+        } catch (Exception e) {
+            return ServerResponse.failedResponse(e);
         }
+    }
 }
