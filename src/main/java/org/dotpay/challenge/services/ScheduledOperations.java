@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.dotpay.challenge.entities.Transaction;
+import org.dotpay.challenge.entities.TransactionSummary;
 import org.dotpay.challenge.enums.TransactionStatus;
 import org.dotpay.challenge.repos.TransactionRepo;
 import org.dotpay.challenge.repos.TransactionSummaryRepo;
@@ -38,8 +39,34 @@ public class ScheduledOperations {
         transactionRepo.saveAll(transactions);
     }
 
+    void summarizeTransactions() {
+        LocalDate date = LocalDate.now().minusDays(1);
+        List<Transaction> transactions = transactionRepo.findByCreatedAt(date);
+        int totalSuccessful = 0;
+        int totalFailed = 0;
+        double amountTransacted = 0.0;
+        double amountCommissioned = 0.0;
+        for (Transaction transaction : transactions) {
+            if(transaction.getStatus().equals(TransactionStatus.SUCCESSFUL)) {
+                totalSuccessful++;
+                amountTransacted += transaction.getAmount();
+                amountCommissioned += transaction.getCommission();
+            } else {
+                totalFailed++;
+            }
+        }
+        int totalTransactions = totalSuccessful + totalFailed;
+        TransactionSummary summary = new TransactionSummary(totalTransactions, totalSuccessful, totalFailed, amountTransacted, amountCommissioned);
+        transactionSummaryRepo.save(summary);
+    }
+
     @Scheduled(cron = "0 0 * * *")
     public void twelveAmJobs () {
         transactionAnalysisOperation();
+    }
+
+    @Scheduled(cron = "0 3 * * *")
+    public void threeAmJobs () {
+        summarizeTransactions();
     }
 }

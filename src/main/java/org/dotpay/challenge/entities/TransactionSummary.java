@@ -35,5 +35,14 @@ public class TransactionSummary {
 	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
 	@CreationTimestamp
 	private Date createdAt;
+    
+    public TransactionSummary(int totalTransactions, int totalSuccessful, int totalFailed, double amountTransacted,
+            double amountCommissioned) {
+        this.totalTransactions = totalTransactions;
+        this.totalSuccessful = totalSuccessful;
+        this.totalFailed = totalFailed;
+        this.amountTransacted = amountTransacted;
+        this.amountCommissioned = amountCommissioned;
+    }
 
 }
