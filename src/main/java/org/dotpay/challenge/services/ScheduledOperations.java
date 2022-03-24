@@ -1,7 +1,5 @@
 package org.dotpay.challenge.services;
 
-import java.text.ParseException;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.dotpay.challenge.entities.Transaction;
@@ -20,64 +18,70 @@ import lombok.RequiredArgsConstructor;
 public class ScheduledOperations {
     private final TransactionRepo transactionRepo;
     private final TransactionSummaryRepo transactionSummaryRepo;
-    
 
-    double getCommission (double transactionFee) {
-        String commission = String.valueOf(((20 / 100) * transactionFee));
-        commission = Helper.decimalFormat.format(commission);
-        return Double.parseDouble(commission);
+    static double getCommission(double transactionFee) {
+        double commission = (20 * transactionFee) / 100;
+        String formatted = Helper.decimalFormat.format(commission);
+        Helper.logInfo(transactionFee + ">>>>>> " + commission);
+        return Double.parseDouble(formatted);
     }
 
-    void transactionAnalysisOperation() throws ParseException {
-        LocalDate date = LocalDate.now().minusDays(1);
-        List<Transaction> transactions = transactionRepo.findByCreatedAt(Helper.dateFormatter.parse(date.toString()));
-        for (Transaction transaction : transactions) {
-            if(transaction.getStatus().equals(TransactionStatus.SUCCESSFUL)) {
-                transaction.setCommissionWorthy(true);
-                transaction.setCommission(getCommission(transaction.getTransactionFee()));
-            }
-        }
-        transactionRepo.saveAll(transactions);
-    }
-
-    void summarizeTransactions() throws ParseException {
-        LocalDate date = LocalDate.now().minusDays(1);
-        List<Transaction> transactions = transactionRepo.findByCreatedAt(Helper.dateFormatter.parse(date.toString()));
-        int totalSuccessful = 0;
-        int totalFailed = 0;
-        double amountTransacted = 0.0;
-        double amountCommissioned = 0.0;
-        for (Transaction transaction : transactions) {
-            if(transaction.getStatus().equals(TransactionStatus.SUCCESSFUL)) {
-                totalSuccessful++;
-                amountTransacted += transaction.getAmount();
-                amountCommissioned += transaction.getCommission();
-            } else {
-                totalFailed++;
-            }
-        }
-        int totalTransactions = totalSuccessful + totalFailed;
-        TransactionSummary summary = new TransactionSummary(totalTransactions, totalSuccessful, totalFailed, amountTransacted, amountCommissioned);
-        transactionSummaryRepo.save(summary);
-    }
-
-    @Scheduled(cron = "0 0 0 * * *")
-    public void twelveAmJobs () {
+    public boolean transactionAnalysisOperation() {
         try {
-            transactionAnalysisOperation();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
+            List<Transaction> transactions = transactionRepo.findByCreatedAtBetween(Helper.getYesterdayDate(), Helper.parseDate(null));
+            for (Transaction transaction : transactions) {
+                if (transaction.getStatus().equals(TransactionStatus.SUCCESSFUL)) {
+                    transaction.setCommissionWorthy(true);
+                    transaction.setCommission(getCommission(transaction.getTransactionFee()));
+                    Helper.logInfo("Commission \t" + transaction.getCommission());
+                }
+            }
+            transactionRepo.saveAll(transactions);
+            Helper.logInfo("Transactions successfully analyzed.");
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
+            Helper.logInfo("Transactions failed to analyze.");
+            return false;
         }
     }
 
-    @Scheduled(cron = "0 0 3 * * *")
-    public void threeAmJobs () {
+    public boolean summarizeTransactions() {
         try {
-            summarizeTransactions();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
+            List<Transaction> transactions = transactionRepo.findByCreatedAtBetween(Helper.getYesterdayDate(), Helper.getTodayDate());
+            int totalSuccessful = 0;
+            int totalFailed = 0;
+            double amountTransacted = 0.0;
+            double amountCommissioned = 0.0;
+            for (Transaction transaction : transactions) {
+                if (transaction.getStatus().equals(TransactionStatus.SUCCESSFUL)) {
+                    totalSuccessful++;
+                    amountTransacted += transaction.getAmount();
+                    amountCommissioned += transaction.getCommission();
+                } else {
+                    totalFailed++;
+                }
+            }
+            int totalTransactions = totalSuccessful + totalFailed;
+            TransactionSummary summary = new TransactionSummary(totalTransactions, totalSuccessful, totalFailed,
+                    amountTransacted, amountCommissioned);
+            transactionSummaryRepo.save(summary);
+            Helper.logInfo("Transaction summary successfully generated.");
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
+            Helper.logInfo("Transaction Summary failed to generate.");
+            return false;
         }
+    }
+
+    @Scheduled(cron = "00 06 17 * * *")
+    public void twelveAmJobs() {
+        transactionAnalysisOperation();
+    }
+
+    @Scheduled(cron = "0 59 16 * * *")
+    public void threeAmJobs() {
+        summarizeTransactions();
     }
 }

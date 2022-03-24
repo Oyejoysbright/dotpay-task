@@ -43,6 +43,12 @@ public class TransactionControllerTest {
     @Test
     public void performDataRetrieving() throws Exception {
         getTransactions();
+        getInsufficientFundTransactions();
+        getSuccessfulTransactions();
+        getFailedTransactions();
+        getDateRangedTransactions();
+        getTransactionSummary();
+        getTransactionSummaryWithDate();
     }
 
     void addCustomers() throws Exception {
@@ -72,5 +78,63 @@ public class TransactionControllerTest {
             assertEquals(false, contentAsClass.getHasError());
             assertEquals(anyList(), contentAsClass.getData());            
         }
+    }
+
+    void getSuccessfulTransactions() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/transactions")
+                .param("status", "SUCCESSFUL");
+        String contentAsString = mockMvc.perform(requestBuilder).andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        if (!contentAsString.isBlank()) {
+            ResponseMessage<?> contentAsClass = mapper.readValue(contentAsString, ResponseMessage.class);
+            assertEquals(false, contentAsClass.getHasError());
+            assertEquals(anyList(), contentAsClass.getData());            
+        }
+    }
+
+    void getInsufficientFundTransactions() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/transactions")
+                .param("status", "INSUFFICIENT_FUND");
+        String contentAsString = mockMvc.perform(requestBuilder).andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        if (!contentAsString.isBlank()) {
+            ResponseMessage<?> contentAsClass = mapper.readValue(contentAsString, ResponseMessage.class);
+            assertEquals(false, contentAsClass.getHasError());
+            assertEquals(anyList(), contentAsClass.getData());            
+        }
+    }
+
+    void getFailedTransactions() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/transactions")
+                .param("status", "FAILED");
+        String contentAsString = mockMvc.perform(requestBuilder).andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        if (!contentAsString.isBlank()) {
+            ResponseMessage<?> contentAsClass = mapper.readValue(contentAsString, ResponseMessage.class);
+            assertEquals(false, contentAsClass.getHasError());
+            assertEquals(anyList(), contentAsClass.getData());            
+        }
+    }
+
+    void getDateRangedTransactions() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/transactions")
+                .param("startDate", "2022-03-23 00:00:00").param("endDate", "2022-03-24 00:00:00");
+        String contentAsString = mockMvc.perform(requestBuilder).andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        if (!contentAsString.isBlank()) {
+            ResponseMessage<?> contentAsClass = mapper.readValue(contentAsString, ResponseMessage.class);
+            assertEquals(false, contentAsClass.getHasError());
+            assertEquals(anyList(), contentAsClass.getData());            
+        }
+    }
+
+    void getTransactionSummary() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/transactions/summary");
+        mockMvc.perform(requestBuilder).andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    void getTransactionSummaryWithDate() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/transactions/summary").param("date", "2022-03-24 00:00:00");
+        mockMvc.perform(requestBuilder).andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

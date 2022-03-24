@@ -12,15 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TransactionRepo extends JpaRepository<Transaction, String> {
 
-    List<Transaction> findByStatusContainsAndSenderAccountNumberContainsAndBeneficiaryAccountNumberContainsAndTransferTypeContainsAndCreatedAtBetween(
-            TransactionStatus status, Integer senderAccountNumber, Integer receiverAccountNumber, TransferType type,
-            Date startDate, Date endDate);
-
-    List<Transaction> findByCreatedAt(Date date);
-
-    List<Transaction> findByStatusContainsAndSenderAccountNumberContainsAndBeneficiaryAccountNumberContainsAndTransferTypeContains(
-            TransactionStatus status, Integer senderAccountNumber, Integer receiverAccountNumber, TransferType type);
-
     List<Transaction> findByStatusAndIdIn(TransactionStatus status, List<String> transactionsIds);
 
     List<Transaction> findBySenderAccountNumberAndIdIn(Integer senderAccountNumber,

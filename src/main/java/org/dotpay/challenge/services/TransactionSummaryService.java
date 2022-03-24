@@ -17,9 +17,17 @@ public class TransactionSummaryService {
 
     public ResponseEntity<ResponseMessage<Object>> getTransactionSummary(String date) {
         try {
-            TransactionSummary summary = transactionSummaryRepo.findByCreatedAt(Helper.parseDate(date));
+            TransactionSummary summary;
+
+            if (date == null) {
+                summary = transactionSummaryRepo.findByCreatedAtBetween(Helper.getYesterdayDate(), Helper.getTodayDate());
+            }
+            else {
+                summary = transactionSummaryRepo.findByCreatedAtBetween(Helper.getPreviousDate(date), Helper.parseDate(date));
+            }
             return ServerResponse.successfulResponse("Transaction summary for specified date fetched", summary);
         } catch (Exception e) {
+            e.printStackTrace();
             return ServerResponse.failedResponse(e);
         }
     }

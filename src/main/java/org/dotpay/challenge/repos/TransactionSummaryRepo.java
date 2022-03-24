@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TransactionSummaryRepo extends JpaRepository<TransactionSummary, String> {
 
-    TransactionSummary findByCreatedAt(Date date);
+    TransactionSummary findByCreatedAtBetween(Date date1, Date date2);
     
 }

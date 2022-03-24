@@ -38,7 +38,7 @@ public class TransactionService {
     }
 
     static double getTransactionFee(double amount) {
-        double fee = (0.5 / 100) * amount;
+        double fee = (0.5 * amount) / 100;
         // Format the decimal result
         String formatted = Helper.decimalFormat.format(fee);
         return Double.parseDouble(formatted);

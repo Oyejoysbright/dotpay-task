@@ -41,7 +41,7 @@ public class TransactionController {
     }
 
     @GetMapping("/summary")
-    public ResponseEntity<ResponseMessage<Object>> getTransactionSummary(String date) {
+    public ResponseEntity<ResponseMessage<Object>> getTransactionSummary(@RequestParam(required = false) String date) {
         return summaryService.getTransactionSummary(date);
     }
 }

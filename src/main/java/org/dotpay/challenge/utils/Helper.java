@@ -1,8 +1,12 @@
 package org.dotpay.challenge.utils;
 
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -14,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Helper {
     public static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
-	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
+	static String pattern = "yyyy-MM-dd hh:mm:ss";
+	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(pattern, Locale.ENGLISH);
+	public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
 	public static final ObjectMapper mapper = new ObjectMapper();
 	
 	/**
@@ -27,12 +33,37 @@ public class Helper {
 	 */
 	public static Date parseDate(String date) throws ParseException {
 		if ((date == null) || (date.isBlank())) {
-			String today = dateFormatter.format(new Date());
+			String today = dateTimeFormatter.format(LocalDateTime.now());
 			return dateFormatter.parse(today);
 		}
 		else {
-			return dateFormatter.parse(date);
+			try {
+				return dateFormatter.parse(date);
+			} catch(ParseException e ) {
+				return Timestamp.valueOf(LocalDateTime.parse(date, dateTimeFormatter));
+			}
 		}
+	}
+
+	public static Date getPreviousDate(String dateString) throws ParseException {
+        LocalDateTime localDate = LocalDate.parse(dateString, dateTimeFormatter).minusDays(1).atStartOfDay();
+		Date date = Timestamp.valueOf(localDate);
+		String formatted = dateFormatter.format(date);
+		return dateFormatter.parse(formatted);
+	}
+
+	public static Date getYesterdayDate() throws ParseException {
+        LocalDateTime localDate = LocalDate.now().minusDays(1).atStartOfDay();
+		Date date = Timestamp.valueOf(localDate);
+		String formatted = dateFormatter.format(date);
+		return dateFormatter.parse(formatted);
+	}
+
+	public static Date getTodayDate() throws ParseException {
+        LocalDateTime localDate = LocalDate.now().atStartOfDay();
+		Date date = Timestamp.valueOf(localDate);
+		String formatted = dateFormatter.format(date);
+		return dateFormatter.parse(formatted);
 	}
 
 	/**
