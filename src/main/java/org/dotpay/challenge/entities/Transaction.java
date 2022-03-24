@@ -30,6 +30,7 @@ public class Transaction {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
+    @Column(unique = true)
     private String transactionRef;
     private double amount;
     private double transactionFee;
@@ -37,12 +38,12 @@ public class Transaction {
     private String description;
     private TransactionStatus status;
     private CurrencyEnum currency = CurrencyEnum.NGN;
-    private String senderAccountNumber;
-    private String beneficiaryAccountNumber;
+    private Integer senderAccountNumber;
+    private Integer beneficiaryAccountNumber;
     private boolean commissionWorthy = false;
     private double commission;
     @Column(nullable = false)
-    private TransferType transferType;
+    private TransferType transferType = TransferType.INTRA;
     
     @Column(updatable = false)
 	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")

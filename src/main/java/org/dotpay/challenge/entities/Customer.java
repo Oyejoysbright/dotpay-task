@@ -21,9 +21,16 @@ public class Customer {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
-    private String accountNumber;
-    private String bankCode;
+    private Integer accountNumber;
+    private Integer bankCode;
     private String bankName;
-    private double reservedBalance;
-    private double balance;
+    private double reservedBalance = 0.0;
+    private double balance = 0.0;
+    
+    public Customer(Integer accountNumber, Integer bankCode, String bankName, Double balance) {
+        this.accountNumber = accountNumber;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.balance = balance;
+    }
 }
