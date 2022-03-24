@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>challenge</name>
-	<description>Demo project for Spring Boot</description>
+	<description>A challenge from dotpay for java backend role</description>
 	<properties>
 		<java.version>15</java.version>
 	</properties>
