@@ -5,6 +5,7 @@ Take-home challenge for java backend role at DotPay Africa
 - Singleton was employed as the design pattern (ensuring no multiple instances of a class is being created )
 - JUnit and Mokito was used for the automated testing
 - Java Persistence API was used as persistence layer
+- Springboot scheduler was used for scheduling jobs
 - Every request return a uniform object which will make the user have a similar experience using the exposed APIs
 
 
