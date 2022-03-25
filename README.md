@@ -11,6 +11,7 @@ Take-home challenge for java backend role at DotPay Africa
 
 ### RUNNING THE APP
 - Clone this project, update the project (POM file)
-- Start the main class from your IDE
+- Run the main class from your IDE
 - Import the postman collection sent via the email to your postman workspace and test the apis in there
-Alternatively, you can create docker image, push to container registry and deploy to kubernetes cluster.
+Alternatively, you can create docker image, push to container registry and deploy to kubernetes cluster;
+then test via the postman collection.
